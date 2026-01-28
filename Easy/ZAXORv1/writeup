@@ -1,0 +1,35 @@
+WRITEUP - svidnet's ZEXOR-v1(Linux version)
+
+Firstly :
+
+With file ZEXORv1_wayland I can know that is a ELF 64 bits file, not stripped
+Now I can do a : strings ZEXORv1_wayland
+I actually find the licence key : AEXORRBSHA36325S33
+
+It's not fun anymore, let's try to patch it to put whatever licence key.
+I can see some functions calls like strcmp() who's a string comparison, gtk_entry_get_text()
+So nothing complicated, juste to modify the comparison.
+
+Patching the License Check (IDA)
+
+I open the binary in IDA and navigate to the function responsible for validating the license key.
+
+By following the call to strcmp(), I identify the comparison between the user input and the hardcoded license key.
+Immediately after this comparison, the result is tested and a conditional jump is performed:
+
+test    eax, eax
+jz      loc_1460
+
+
+The jz instruction is taken when the comparison succeeds. To bypass this verification and allow any license key, I patch the conditional jump.
+
+I replace the jz instruction with nop instructions of equivalent size:
+
+nop
+
+
+This effectively removes the conditional check, forcing the program to continue execution as if the license key were always valid.
+
+Finally, I apply the patch by selecting:
+
+Easy
